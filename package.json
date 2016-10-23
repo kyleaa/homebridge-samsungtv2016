@@ -1,11 +1,12 @@
 {
   "name": "homebridge-samsungtv2016",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Homebridge Samsung TV 2016",
   "author": "kyleaa",
   "dependencies": {
     "ws" : "1.1",
-    "wake_on_lan" : "0.0.3"
+    "wake_on_lan" : "0.0.3",
+    "request" : "2.75"
   },
   "keywords": [
     "homebridge-plugin", "samsung"
