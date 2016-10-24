@@ -21,10 +21,11 @@ function SamsungTv2016Accessory(log, config) {
     this.name = config["name"];
     this.mac_address = config["mac_address"];
     this.ip_address = config["ip_address"];
+    this.api_timeout = config["api_timeout"] || 2000;
 
     if (!this.ip_address) throw new Error("You must provide a config value for 'ip_address'.");
     if (!this.mac_address) throw new Error("You must provide a config value for 'mac_address'.");
-    this.app_name_base64 = new Buffer(config["app_name"] || "homebridge").toString('base64');
+    this.app_name_base64 = (new Buffer(config["app_name"] || "homebridge")).toString('base64');
 
     this.is_powering_off = false;
 
@@ -36,7 +37,7 @@ function SamsungTv2016Accessory(log, config) {
     };
 
     this.sendKey = function(key, done) {
-      var ws = new WebSocket('http://' + this.ip_address + ':8001/api/v2/channels/samsung.remote.control?name=' + this.app_name);
+      var ws = new WebSocket('http://' + this.ip_address + ':8001/api/v2/channels/samsung.remote.control?name=' + this.app_name_base64);
       ws.on('message', function(data, flags) {
         var cmd =  {"method":"ms.remote.control","params":{"Cmd":"Click","DataOfCmd":key,"Option":"false","TypeOfRemote":"SendRemoteKey"}};
         data = JSON.parse(data);
@@ -51,7 +52,7 @@ function SamsungTv2016Accessory(log, config) {
     this.service = new Service.Switch(this.name);
 
     this.is_api_active = function(done) {
-      request.get({ url: 'http://' + this.ip_address + ':8001/api/v2/', timeout: 2000}, function(err, res, body) {
+      request.get({ url: 'http://' + this.ip_address + ':8001/api/v2/', timeout: this.api_timeout}, function(err, res, body) {
         if(!err && res.statusCode === 200) {
           log.debug('TV API is active');
           done(true);
