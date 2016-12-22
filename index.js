@@ -54,10 +54,10 @@ function SamsungTv2016Accessory(log, config) {
     this.is_api_active = function(done) {
       request.get({ url: 'http://' + this.ip_address + ':8001/api/v2/', timeout: this.api_timeout}, function(err, res, body) {
         if(!err && res.statusCode === 200) {
-          log.debug('TV API is active');
+          log('TV API is active');
           done(true);
         } else {
-          log.debug('No response from TV');
+          log('No response from TV');
           done(false);
         }
       });
@@ -89,7 +89,7 @@ SamsungTv2016Accessory.prototype._getOn = function(callback) {
     var accessory = this;
 
     if(accessory.is_powering_off) {
-      accessory.log.debug('power off in progress, reporting status as off.');
+      accessory.log('power off in progress, reporting status as off.');
       callback(null, false);
     } else {
       // if we can access the info API, then assume the TV is on
@@ -103,43 +103,43 @@ SamsungTv2016Accessory.prototype._getOn = function(callback) {
 
 SamsungTv2016Accessory.prototype._setOn = function(on, callback) {
     var accessory = this;
-    accessory.log.debug('received on command: ' + on);
+    accessory.log('received on command: ' + on);
 
     if (on) {
       accessory.is_api_active(function(alive) {
         if(alive) {
-          accessory.log.debug('sending power key');
+          accessory.log('sending power key');
           accessory.sendKey('KEY_POWER', function(err) {
               if (err) {
                   callback(new Error(err));
               } else {
                   // command has been successfully transmitted to your tv
-                  accessory.log.debug('successfully powered on tv');
+                  accessory.log('successfully powered on tv');
                   accessory.is_powering_off = false;
                   callback(null);
               }
           });
         } else {
-          accessory.log.debug('attempting wake');
+          accessory.log('attempting wake');
           accessory.wake(function(err) {
               if (err) {
                   callback(new Error(err));
               } else {
                   // command has been successfully transmitted to your tv
-                  accessory.log.debug('successfully woke tv');
+                  accessory.log('successfully woke tv');
                   callback(null);
               }
           });
         }
       });
     } else {
-        accessory.log.debug('sending power key');
+        accessory.log('sending power key');
         accessory.sendKey('KEY_POWER', function(err) {
             if (err) {
                 callback(new Error(err));
             } else {
                 // command has been successfully transmitted to your tv
-                accessory.log.debug('successfully powered off tv');
+                accessory.log('successfully powered off tv');
                 accessory.is_powering_off = true;
                 setTimeout(function() { accessory.is_powering_off = false;}, 15000)
                 callback(null);
