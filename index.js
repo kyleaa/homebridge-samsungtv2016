@@ -16,6 +16,7 @@ module.exports = function(homebridge) {
 //
 
 function SamsungTv2016Accessory(log, config) {
+    var accessory = this;
     this.log = log;
     this.config = config;
     this.name = config["name"];
@@ -42,8 +43,9 @@ function SamsungTv2016Accessory(log, config) {
         var cmd =  {"method":"ms.remote.control","params":{"Cmd":"Click","DataOfCmd":key,"Option":"false","TypeOfRemote":"SendRemoteKey"}};
         data = JSON.parse(data);
         if(data.event == "ms.channel.connect") {
+          accessory.log('websocket connect');
           ws.send(JSON.stringify(cmd));
-          ws.close();
+          setTimeout(function() {ws.close(); accessory.log('websocket closed');}, 1000);
           done(0);
         }
       });
@@ -54,10 +56,10 @@ function SamsungTv2016Accessory(log, config) {
     this.is_api_active = function(done) {
       request.get({ url: 'http://' + this.ip_address + ':8001/api/v2/', timeout: this.api_timeout}, function(err, res, body) {
         if(!err && res.statusCode === 200) {
-          log('TV API is active');
+          accessory.log('TV API is active');
           done(true);
         } else {
-          log('No response from TV');
+          accessory.log('No response from TV');
           done(false);
         }
       });
