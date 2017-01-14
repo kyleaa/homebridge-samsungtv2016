@@ -38,7 +38,13 @@ function SamsungTv2016Accessory(log, config) {
     };
 
     this.sendKey = function(key, done) {
-      var ws = new WebSocket('http://' + this.ip_address + ':8001/api/v2/channels/samsung.remote.control?name=' + this.app_name_base64);
+      var ws = new WebSocket('http://' + this.ip_address + ':8001/api/v2/channels/samsung.remote.control?name=' + this.app_name_base64, function(error) {
+        done(new Error(error));
+      });
+      ws.on('error', function (e) {
+        accessory.log('Error in sendKey WebSocket communication');
+        done(e);
+      });
       ws.on('message', function(data, flags) {
         var cmd =  {"method":"ms.remote.control","params":{"Cmd":"Click","DataOfCmd":key,"Option":"false","TypeOfRemote":"SendRemoteKey"}};
         data = JSON.parse(data);
@@ -128,7 +134,7 @@ SamsungTv2016Accessory.prototype._setOn = function(on, callback) {
                   callback(new Error(err));
               } else {
                   // command has been successfully transmitted to your tv
-                  accessory.log('successfully woke tv');
+                  accessory.log('wake request sent successfully');
                   callback(null);
               }
           });

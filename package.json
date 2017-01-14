@@ -1,6 +1,6 @@
 {
   "name": "homebridge-samsungtv2016",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Homebridge Samsung TV 2016",
   "author": "kyleaa",
   "dependencies": {
